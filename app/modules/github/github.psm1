@@ -53,7 +53,6 @@ function Invoke-GithubApi {
 
     # If this is a paginated response we need to walk it
     Write-Log -Level INFO -Source 'github' -Message "Making initial $method call to find out response information"
-    write-host "Invoke-WebRequest -Method $method -Uri `"https://$apiRoot/$endpoint$queryString`" -Headers $headers -UseBasicParsing -ErrorAction Stop"
     $response = Invoke-WebRequest -Method $method -Uri "https://$apiRoot/$endpoint$queryString" -Headers $headers -UseBasicParsing -ErrorAction Stop
     # items is a special word in pwsh and using a if resp.items leads to bad results
     if ($response.RelationLink.next -or ($response.content -like '*"items":*')) {

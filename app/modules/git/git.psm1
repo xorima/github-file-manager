@@ -7,7 +7,6 @@ function New-GitClone {
     [String]
     $Directory
   )
-    write-host "git clone $($HttpUrl.replace('https://',`"https://$ENV:GITHUB_TOKEN@`")) $Directory"
     git clone $($HttpUrl.replace('https://',"https://$ENV:GITHUB_TOKEN@")) $Directory
     # If error in clone
     if (!($?)){
