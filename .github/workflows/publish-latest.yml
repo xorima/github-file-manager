@@ -1,9 +1,8 @@
 ---
 name: Publish to Registry
 on:
-  push:
-    branches:
-      - master
+  release:
+    types: [published]
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -18,4 +17,4 @@ jobs:
           name: xorima/github-file-manager
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-          tags: "latest"
+          tags: "${{ env.RELEASE_VERSION }}"
