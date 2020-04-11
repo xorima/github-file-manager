@@ -21,4 +21,4 @@ jobs:
         name: xorima/github-file-manager
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        tag_semver: true
+        tags: "latest,${{ env.RELEASE_VERSION }}"
