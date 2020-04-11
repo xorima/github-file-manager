@@ -36,7 +36,7 @@ jobs:
         shell: pwsh
         run: |
          Import-Module PSScriptAnalyzer
-         Invoke-ScriptAnalyzer . -Recurse -ExcludeRule 'PSUseShouldProcessForStateChangingFunctions'
+         Invoke-ScriptAnalyzer . -Recurse
 
   pester:
     runs-on: ubuntu-latest
@@ -46,7 +46,7 @@ jobs:
       - name: Install Pester
         shell: pwsh
         run: Install-Module Pester -force
-      - name: Run PS Script Analyzer
+      - name: Run PS Pester
         shell: pwsh
         run: |
          Import-Module Pester
