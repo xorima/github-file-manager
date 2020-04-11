@@ -132,38 +132,61 @@ foreach ($repository in $DestinationRepositories) {
     Write-Log -Level Error -Source 'entrypoint' -Message "Unable to clone $sourceRepoOwner/$sourceRepoName"
   }
 
-  try {
-    Write-Log -Level INFO -Source 'entrypoint' -Message "Creating branch $BranchName if it does not already exist"
-    New-GithubBranch -repo $repository.name -owner $DestinationRepoOwner -BranchName $BranchName -BranchFromName 'master'
+try {
+  $branchExists = Get-GithubBranch -repo $repository.name -owner $DestinationRepoOwner -branchFilterName $BranchName
+  if ($branchExists) {
+    Write-Log -Level INFO -Source 'entrypoint' -Message "Branch $branchName already exists, switching to it"
     Set-Location $repoFolder
     Select-GitBranch -BranchName $BranchName
     Set-Location $rootFolder
   }
-  catch {
-    Write-Log -Level Error -Source 'entrypoint' -Message "Unable to create branch $BranchName"
-  }
+}
+catch {
+  Write-Log -Level Error -Source 'entrypoint' -Message "Unable to check if branch $branchName already exists"
+}
+
 
   try {
     Write-Log -Level INFO -Source 'entrypoint' -Message "Copying managed files from $SourceRepoDiskPath to $repoFolder"
     # Copy items into the folder
     copy-item "$SourceRepoDiskPath/*" ./$repoFolder -Recurse -Force
     Set-Location $repoFolder
+    $filesChanges = Get-GitChangeCount
   }
   catch {
     Write-Log -Level Error -Source 'entrypoint' -Message "Unable to copy managed files from $SourceRepoDiskPath to $repoFolder"
   }
-  try {
-    Write-Log -Level INFO -Source 'entrypoint' -Message "Commiting standardised files and pushing to remote if changed"
-    New-CommitAndPushIfChanged -CommitMessage "Standardise files with files in $SourceRepoOwner/$SourceRepoName" -push
+  if ($fileChanges -gt 0)
+  {
+    try {
+      if (!($branchExists))
+      {
+        Write-Log -Level INFO -Source 'entrypoint' -Message "Creating branch $BranchName as it does not already exist"
+        New-GithubBranch -repo $repository.name -owner $DestinationRepoOwner -BranchName $BranchName -BranchFromName 'master'
+        Select-GitBranch -BranchName $BranchName
+      }
+    }
+    catch {
+      Write-Log -Level Error -Source 'entrypoint' -Message "Unable to create branch $BranchName"
+    }
+
+    # Commit the files that have changed
+    try {
+      Write-Log -Level INFO -Source 'entrypoint' -Message "Commiting standardised files and pushing to remote if changed"
+      New-CommitAndPushIfChanged -CommitMessage "Standardise files with files in $SourceRepoOwner/$SourceRepoName" -push
+    }
+    catch {
+      Write-Log -Level ERROR -Source 'entrypoint' -Message "Unable to commit standardised files and push to remote if changed"
+    }
+    try {
+      Write-Log -Level INFO -Source 'entrypoint' -Message "Opening Pull Request $PullRequestTitle with body of $PullRequestBody"
+      New-GithubPullRequest -owner $DestinationRepoOwner -Repo $repository.name -Head "$($DestinationRepoOwner):$($BranchName)" -base 'master' -title $PullRequestTitle -body $PullRequestBody
+    }
+    catch {
+      Write-Log -Level ERROR -Source 'entrypoint' -Message "Unable to open Pull Request $PullRequestTitle with body of $PullRequestBody"
+    }
   }
-  catch {
-    Write-Log -Level ERROR -Source 'entrypoint' -Message "Unable to commit standardised files and push to remote if changed"
-  }
-  try {
-    Write-Log -Level INFO -Source 'entrypoint' -Message "Opening Pull Request $PullRequestTitle with body of $PullRequestBody"
-    New-GithubPullRequest -owner $DestinationRepoOwner -Repo $repository.name -Head "$($DestinationRepoOwner):$($BranchName)" -base 'master' -title $PullRequestTitle -body $PullRequestBody
-  }
-  catch {
-    Write-Log -Level ERROR -Source 'entrypoint' -Message "Unable to open Pull Request $PullRequestTitle with body of $PullRequestBody"
+  else {
+    Write-Log -Level INFO -Source 'entrypoint' -Message "No file changes to process"
   }
 }
