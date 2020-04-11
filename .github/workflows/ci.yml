@@ -36,7 +36,7 @@ jobs:
         shell: pwsh
         run: |
          Import-Module PSScriptAnalyzer
-         Invoke-ScriptAnalyzer . -Recurse
+         Invoke-ScriptAnalyzer . -Recurse -ExcludeRule 'PSUseShouldProcessForStateChangingFunctions'
 
   pester:
     runs-on: ubuntu-latest

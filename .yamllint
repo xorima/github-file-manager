@@ -4,6 +4,5 @@ extends: default
 rules:
   truthy:
     ignore: .github/workflows/*
-
-ignore: |
-  app/fixtures/vcr_cassettes/**/*
+  line-length
+    max: 120
