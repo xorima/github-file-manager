@@ -3,6 +3,6 @@ extends: default
 
 rules:
   truthy:
-    ignore: .github/workflows/*
+    ignore: ".github/workflows/*"
   line-length
     max: 120
