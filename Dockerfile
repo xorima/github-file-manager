@@ -7,7 +7,7 @@ LABEL org.label-schema.description="A File Manager system for Github Repositorie
 LABEL org.label-schema.url="https://github.com/Xorima/github-file-manager"
 LABEL org.label-schema.vcs-url="https://github.com/Xorima/github-file-manager"
 
-COPY app /app
 RUN apt-get update && apt-get install -y git
+COPY app /app
 
 ENTRYPOINT ["pwsh", "-file", "app/entrypoint.ps1"]
