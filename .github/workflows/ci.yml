@@ -23,3 +23,31 @@ jobs:
         uses: actions/checkout@master
       - name: Run Markdown Lint
         uses: actionshub/markdownlint@master
+
+  psscriptanalyzer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@master
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: Install-Module PSScriptAnalyzer -force
+      - name: Run PS Script Analyzer
+        shell: pwsh
+        run: |
+         Import-Module PSScriptAnalyzer
+         Invoke-ScriptAnalyzer . -Recurse -ExcludeRule 'PSUseShouldProcessForStateChangingFunctions'
+
+  pester:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@master
+      - name: Install Pester
+        shell: pwsh
+        run: Install-Module Pester -force
+      - name: Run PS Pester
+        shell: pwsh
+        run: |
+         Import-Module Pester
+         Invoke-Pester
