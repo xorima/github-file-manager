@@ -32,3 +32,7 @@ Below are a list of variables, what they mean and example values
 | GFM_PULL_REQUEST_LABELS | `String` | No | The labels to apply to the Pull Request, Takes a csv, eg: `tech-debt,automated` |
 | GFM_GIT_NAME | `String` | No | The Name to use when creating the git commits |
 | GFM_GIT_EMAIL | `String` | No | The E-mail address to use when creating the git commits |
+
+## Git Authentication
+
+We use the `GITHUB_TOKEN` environment variable to also authenticate against git, github allows this to be used instead of username and password
