@@ -151,12 +151,12 @@ catch {
     # Copy items into the folder
     copy-item "$SourceRepoDiskPath/*" ./$repoFolder -Recurse -Force
     Set-Location $repoFolder
-    $filesChanges = Get-GitChangeCount
+    $filesChanged = Get-GitChangeCount
   }
   catch {
     Write-Log -Level Error -Source 'entrypoint' -Message "Unable to copy managed files from $SourceRepoDiskPath to $repoFolder"
   }
-  if ($fileChanges -gt 0)
+  if ($filesChanged -gt 0)
   {
     try {
       if (!($branchExists))
