@@ -5,4 +5,4 @@ rules:
   truthy:
     ignore: ".github/workflows/*"
   line-length:
-    max: 150
+    max: 160
