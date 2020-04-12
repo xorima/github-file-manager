@@ -2,9 +2,9 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: github-file-manager-cookbook
+  name: github-file-manager-ide
 spec:
-  schedule: "0 13 * * *"
+  schedule: "0 14 * * *"
   jobTemplate:
     spec:
       template:
@@ -23,17 +23,17 @@ spec:
                 - name: GFM_SOURCE_REPO_NAME
                   value: repo-management
                 - name: GFM_SOURCE_REPO_PATH
-                  value: "standardfiles/cookbook"
+                  value: "standardfiles/ide"
                 - name: GFM_DESTINATION_REPO_OWNER
                   value: sous-chefs
                 - name: GFM_DESTINATION_REPO_TOPICS
-                  value: "chef-cookbook"
+                  value: "ide"
                 - name: GFM_BRANCH_NAME
                   value: "automated/standardfiles"
                 - name: GFM_PULL_REQUEST_TITLE
                   value: "Automated PR: Standardising Files"
                 - name: GFM_PULL_REQUEST_BODY
-                  value: "This PR will standardise the files we have with out agreed spec in sous-chefs/repo-management, this repo has been identified as a cookbook repo by topic of chef-cookbook"
+                  value: "This PR will standardise the files we have with out agreed spec in sous-chefs/repo-management, this repo has been identified as an ide repo by topic of ide"
                 - name: GFM_GIT_NAME
                   value: "Xorima Bot"
                 - name: GFM_GIT_EMAIL

@@ -36,3 +36,15 @@ Below are a list of variables, what they mean and example values
 ## Git Authentication
 
 We use the `GITHUB_TOKEN` environment variable to also authenticate against git, github allows this to be used instead of username and password
+
+## Docker Tags
+
+This application is tagged as follows
+
+| Name | Description |
+|------|-------------|
+| latest | The latest master merge |
+| dev  | The latest Pull Request build |
+| semvar (eg: 1.0.0) | A Github Release of a fixed point in time |
+
+While all updates should result in a release this is not always the case, sometimes master will change for non-functional related changes and a release will not be made, eg a new file in the `infrastructure` folder
