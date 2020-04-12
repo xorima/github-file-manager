@@ -40,4 +40,4 @@ spec:
                   value: "xorimabot@avon-lea.co.uk"
                 - name: GFM_GIT_USERNAME
                   value: "xorimabot"
-              restartPolicy: Never
+          restartPolicy: Never
