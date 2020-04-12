@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
             - name: github-file-manager
-              image: xorima/github-file-manager:0.2.1
+              image: xorima/github-file-manager:0.2.2
               env:
                 - name: GITHUB_TOKEN
                   valueFrom:
@@ -40,4 +40,4 @@ spec:
                   value: "xorimabot@avon-lea.co.uk"
                 - name: GFM_GIT_USERNAME
                   value: "xorimabot"
-              restartPolicy: Never
+          restartPolicy: Never
