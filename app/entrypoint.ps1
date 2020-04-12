@@ -121,6 +121,7 @@ catch {
 }
 # Clone out each and every repository
 foreach ($repository in $DestinationRepositories) {
+  Set-Location $rootFolder
   Write-Log -Level Info -Source 'entrypoint' -Message "Starting processing on $($repository.name)"
   # Clone and setup folder tracking
   $repoFolder = Join-Path $DestinationRepositoriesDiskLocation $repository.name

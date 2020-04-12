@@ -11,7 +11,7 @@ spec:
         spec:
           containers:
             - name: github-file-manager
-              image: xorima/github-file-manager:0.2.1
+              image: xorima/github-file-manager:0.2.2
               env:
                 - name: GITHUB_TOKEN
                   valueFrom:
