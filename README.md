@@ -39,6 +39,8 @@ We use the `GITHUB_TOKEN` environment variable to also authenticate against git,
 
 ## Docker Tags
 
+Images are stored in <https://hub.docker.com/r/xorima/github-file-manager>
+
 This application is tagged as follows
 
 | Name | Description |
