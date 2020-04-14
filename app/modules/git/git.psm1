@@ -41,7 +41,7 @@ function New-CommitAndPushIfChanged {
       Write-Log -Level INFO -Source 'git' -Message 'Files have changed adding all files'
       git add -A
       Write-Log -Level INFO -Source 'git' -Message "Committing to current branch $(git branch)"
-      git commit -m "$CommitMessage"
+      git commit -m "$CommitMessage" -s
       if ($push) {
         Write-Log -Level INFO -Source 'git' -Message "Pushing changes to remote"
         git push

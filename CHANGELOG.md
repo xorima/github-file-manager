@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+Sign git commits
+
 ## 1.0.0
 
 Full initial release of the application with all functionality working
