@@ -1,0 +1,4 @@
+*.txt
+/tmp
+/destination-repos
+*.tmp

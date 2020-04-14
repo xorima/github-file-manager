@@ -1,0 +1,43 @@
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: github-file-manager-cookbook
+spec:
+  schedule: "0 11 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: github-file-manager
+              image: xorima/github-file-manager:1.0.0
+              env:
+                - name: GITHUB_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: xorimabot-github
+                      key: github_token
+                - name: GFM_SOURCE_REPO_OWNER
+                  value: chef-cookbooks
+                - name: GFM_SOURCE_REPO_NAME
+                  value: repo-management
+                - name: GFM_SOURCE_REPO_PATH
+                  value: "standardfiles/cookbook"
+                - name: GFM_DESTINATION_REPO_OWNER
+                  value: chef-cookbooks
+                - name: GFM_DESTINATION_REPO_TOPICS
+                  value: "cookbook"
+                - name: GFM_BRANCH_NAME
+                  value: "automated/standardfiles"
+                - name: GFM_PULL_REQUEST_TITLE
+                  value: "Automated PR: Standardising Files"
+                - name: GFM_PULL_REQUEST_BODY
+                  value: "This PR will standardise the files we have with the agreed spec in chef-cookbooks/repo-management, this repo has been identified as a cookbook repo by topic of cookbook"
+                - name: GFM_GIT_NAME
+                  value: "Xorima Bot"
+                - name: GFM_GIT_EMAIL
+                  value: "xorimabot@avon-lea.co.uk"
+                - name: GFM_GIT_USERNAME
+                  value: "xorimabot"
+          restartPolicy: Never
