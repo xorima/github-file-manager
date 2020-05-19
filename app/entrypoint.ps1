@@ -24,6 +24,10 @@ param (
   [String]
   [ValidateNotNullOrEmpty()]
   $SourceRepoPath = $ENV:GFM_SOURCE_REPO_PATH,
+  [Parameter()]
+  [String]
+  [ValidateNotNullOrEmpty()]
+  $SourceRepoDeletePath = $ENV:GFM_SOURCE_REPO_DELETE_PATH,
   [String]
   [ValidateNotNullOrEmpty()]
   $DestinationRepoOwner = $ENV:GFM_DESTINATION_REPO_OWNER,
@@ -62,7 +66,10 @@ catch {
 if (!($ENV:GITHUB_TOKEN)) {
   Write-Log -Level Error -Source 'entrypoint' -Message "No GITUB_TOKEN env var detected"
 }
-
+if (!($ENV:GITHUB_API_ROOT)) {
+  Write-Log -Level INFO -Source 'entrypoint' -Message "GITHUB_API_ROOT has been set to api.github.com"
+  $ENV:GITHUB_API_ROOT = 'api.github.com'
+}
 # Setup the git config first, if env vars are not supplied this will do nothing.
 Set-GitConfig -gitName $GitName -gitEmail $GitEmail
 
@@ -152,10 +159,24 @@ catch {
     # Copy items into the folder
     copy-item "$SourceRepoDiskPath/*" ./$repoFolder -Recurse -Force
     Set-Location $repoFolder
-    $filesChanged = Get-GitChangeCount
   }
   catch {
     Write-Log -Level Error -Source 'entrypoint' -Message "Unable to copy managed files from $SourceRepoDiskPath to $repoFolder"
+  }
+  try {
+    Write-Log -Level INFO -Source 'entrypoint' -Message "Copying managed files from $SourceRepoDiskPath to $repoFolder"
+    # Copy items into the folder
+    copy-item "$SourceRepoDiskPath/*" ./$repoFolder -Recurse -Force
+    Set-Location $repoFolder
+  }
+  catch {
+    Write-Log -Level Error -Source 'entrypoint' -Message "Unable to copy managed files from $SourceRepoDiskPath to $repoFolder"
+  }
+  try {
+  $filesChanged = Get-GitChangeCount
+  }
+  catch {
+    Write-Log -Level Error -Source 'entrypoint' -Message "Unable to count changed files in git"
   }
   if ($filesChanged -gt 0)
   {

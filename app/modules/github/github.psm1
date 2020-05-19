@@ -38,7 +38,7 @@ function Invoke-GithubApi {
     [String]
     $Body = "{}",
     [String]
-    $ApiRoot = 'api.github.com'
+    $ApiRoot = $ENV:GITHUB_API_ROOT
   )
   Write-Log -Level Debug -Source 'github' -Message "Getting Authentication header"
   $AuthHeader = Get-GithubAuthenticationHeader
