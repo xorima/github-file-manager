@@ -48,16 +48,17 @@ function Invoke-GithubApi {
   if ($method -eq 'GET') {
     if ($query) {
       Write-Log -Level INFO -Source 'github' -Message "Adding Query $query to GET call"
-      $queryString = "?$query"
+      $queryString = "?$query&per_page=1000"
     }
 
     # If this is a paginated response we need to walk it
-    Write-Log -Level INFO -Source 'github' -Message "Making initial $method call to find out response information"
+    Write-Log -Level INFO -Source 'github' -Message "Making initial $method call to find out response information https://$apiRoot/$endpoint$queryString"
     $response = Invoke-WebRequest -Method $method -Uri "https://$apiRoot/$endpoint$queryString" -Headers $headers -UseBasicParsing -ErrorAction Stop
-    # items is a special word in pwsh and using a if resp.items leads to bad results
-    if ($response.RelationLink.next -or ($response.content -like '*"items":*')) {
+    $items = ConvertFrom-Json $response.Content
+
+    if ($response.RelationLink.next) {
       Write-Log -Level INFO -Source 'github' -Message "Response is Paginated, getting all results"
-      return Get-GithubApiPaginatedResponse -uri "https://$apiRoot/$endpoint$queryString" -Headers $Headers -ErrorAction Stop
+      return $items.items + (Get-GithubApiPaginatedResponse -uri $response.RelationLink.next -Headers $Headers -ErrorAction Stop)
     }
     # We use an index here due to how diff powershell object behave
     # elseif ($responseContent.items[0]) {
@@ -66,8 +67,18 @@ function Invoke-GithubApi {
     # }
     else {
       Write-Log -Level INFO -Source 'github' -Message "Returning results object"
-      return ConvertFrom-Json $response.Content
-      #return $responseContent
+
+      # $items can be 1 of 3 things:
+      # an array or a single item -> we want it
+      # an objects with an array of items -> we want the items
+      # Testing on $item.items first doesn't work as sometimes there's a special property with the wrong values
+      if($items -is [array]) {
+        return $items
+      }
+      if($items.items) {
+        return $items.items
+      }
+      return $items
     }
   }
   else {
@@ -82,16 +93,20 @@ function Get-GithubApiPaginatedResponse {
   param(
     [String]
     $uri,
-    [Array]
-    $responseItems = @(),
     [Hashtable]
     $Headers = @{'accept' = 'application/json' }
   )
   $response = Invoke-WebRequest -Method 'GET' -Uri $uri -Headers $headers -UseBasicParsing -ErrorAction Stop
-  $responseItems += ($response.content | ConvertFrom-Json).items
+  $responseJson = ($response.content | ConvertFrom-Json)
+  if ($responseJson.GetType().BaseType.Name -eq 'Array') {
+      $responseItems = $responseJson
+  }
+  else {
+    $responseItems = $responseJson.items
+  }
   if ($response.RelationLink.next) {
     Write-Log -Level INFO -Source 'github' -Message "Getting next page of items"
-    $responseItems += Get-GithubApiPaginatedResponse -uri $response.RelationLink.next
+    $responseItems += Get-GithubApiPaginatedResponse -uri $response.RelationLink.next -Headers $Headers
   }
   return $responseItems
 }
