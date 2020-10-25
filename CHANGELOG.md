@@ -1,5 +1,11 @@
 # Changelog
 
+## Unresolved
+
+- Resolved issues with pagination:
+  - Set auth headers correctly
+  - Removed duplicate results from being added
+
 ## 1.1.0
 
 Sign git commits
