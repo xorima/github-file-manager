@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.1 - *2020-10-25*
 
 - Resolved issues with pagination:
   - Set auth headers correctly
