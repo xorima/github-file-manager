@@ -1,6 +1,6 @@
 # Changelog
 
-## Unresolved
+## Unreleased
 
 - Resolved issues with pagination:
   - Set auth headers correctly
