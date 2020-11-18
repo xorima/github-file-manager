@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fixed bug with dockerhub push due to set-env deprecation
+
 ## 1.2.1 - *2020-10-25*
 
 - Resolved issues with pagination:
