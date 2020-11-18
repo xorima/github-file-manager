@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.3 - *2020-11-18*
 
 - Removed branch cleanup workflow as now using github repo settings
 
