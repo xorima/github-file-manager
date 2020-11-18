@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Removed branch cleanup workflow as now using github repo settings
+
 ## 1.2.2 - *2020-11-18*
 
 - Fixed bug with dockerhub push due to set-env deprecation
