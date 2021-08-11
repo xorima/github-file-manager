@@ -48,7 +48,9 @@ param (
   [String]
   $GitName = $ENV:GFM_GIT_NAME,
   [String]
-  $GitEmail = $ENV:GFM_GIT_EMAIL
+  $GitEmail = $ENV:GFM_GIT_EMAIL,
+  [String]
+  $DefaultBranchName = 'main'
 )
 
 try {
@@ -164,15 +166,6 @@ catch {
     Write-Log -Level Error -Source 'entrypoint' -Message "Unable to copy managed files from $SourceRepoDiskPath to $repoFolder"
   }
   try {
-    Write-Log -Level INFO -Source 'entrypoint' -Message "Copying managed files from $SourceRepoDiskPath to $repoFolder"
-    # Copy items into the folder
-    copy-item "$SourceRepoDiskPath/*" ./$repoFolder -Recurse -Force
-    Set-Location $repoFolder
-  }
-  catch {
-    Write-Log -Level Error -Source 'entrypoint' -Message "Unable to copy managed files from $SourceRepoDiskPath to $repoFolder"
-  }
-  try {
   $filesChanged = Get-GitChangeCount
   }
   catch {
@@ -184,7 +177,7 @@ catch {
       if (!($branchExists))
       {
         Write-Log -Level INFO -Source 'entrypoint' -Message "Creating branch $BranchName as it does not already exist"
-        New-GithubBranch -repo $repository.name -owner $DestinationRepoOwner -BranchName $BranchName -BranchFromName 'master'
+        New-GithubBranch -repo $repository.name -owner $DestinationRepoOwner -BranchName $BranchName -BranchFromName $DefaultBranchName
         Select-GitBranch -BranchName $BranchName
       }
     }
@@ -202,7 +195,7 @@ catch {
     }
     try {
       Write-Log -Level INFO -Source 'entrypoint' -Message "Opening Pull Request $PullRequestTitle with body of $PullRequestBody"
-      New-GithubPullRequest -owner $DestinationRepoOwner -Repo $repository.name -Head "$($DestinationRepoOwner):$($BranchName)" -base 'master' -title $PullRequestTitle -body $PullRequestBody
+      New-GithubPullRequest -owner $DestinationRepoOwner -Repo $repository.name -Head "$($DestinationRepoOwner):$($BranchName)" -base $DefaultBranchName -title $PullRequestTitle -body $PullRequestBody
     }
     catch {
       Write-Log -Level ERROR -Source 'entrypoint' -Message "Unable to open Pull Request $PullRequestTitle with body of $PullRequestBody"
