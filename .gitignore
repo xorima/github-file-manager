@@ -1,4 +1,5 @@
 *.txt
 /tmp
 /destination-repos
+/source-repo
 *.tmp

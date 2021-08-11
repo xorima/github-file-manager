@@ -48,7 +48,9 @@ param (
   [String]
   $GitName = $ENV:GFM_GIT_NAME,
   [String]
-  $GitEmail = $ENV:GFM_GIT_EMAIL
+  $GitEmail = $ENV:GFM_GIT_EMAIL,
+  [String]
+  $DefaultBranchName = $ENV:GFM_DEFAULT_GIT_BRANCH
 )
 
 try {
@@ -69,6 +71,11 @@ if (!($ENV:GITHUB_TOKEN)) {
 if (!($ENV:GITHUB_API_ROOT)) {
   Write-Log -Level INFO -Source 'entrypoint' -Message "GITHUB_API_ROOT has been set to api.github.com"
   $ENV:GITHUB_API_ROOT = 'api.github.com'
+}
+if (!($DefaultBranchName)){
+  Write-Log -Level INFO -Source 'entrypoint' -Message "DefaultBranchName has been set to 'main', to override set env var: GFM_DEFAULT_GIT_BRANCH"
+  $DefaultBranchName = 'main'
+
 }
 # Setup the git config first, if env vars are not supplied this will do nothing.
 Set-GitConfig -gitName $GitName -gitEmail $GitEmail
@@ -164,15 +171,6 @@ catch {
     Write-Log -Level Error -Source 'entrypoint' -Message "Unable to copy managed files from $SourceRepoDiskPath to $repoFolder"
   }
   try {
-    Write-Log -Level INFO -Source 'entrypoint' -Message "Copying managed files from $SourceRepoDiskPath to $repoFolder"
-    # Copy items into the folder
-    copy-item "$SourceRepoDiskPath/*" ./$repoFolder -Recurse -Force
-    Set-Location $repoFolder
-  }
-  catch {
-    Write-Log -Level Error -Source 'entrypoint' -Message "Unable to copy managed files from $SourceRepoDiskPath to $repoFolder"
-  }
-  try {
   $filesChanged = Get-GitChangeCount
   }
   catch {
@@ -184,7 +182,7 @@ catch {
       if (!($branchExists))
       {
         Write-Log -Level INFO -Source 'entrypoint' -Message "Creating branch $BranchName as it does not already exist"
-        New-GithubBranch -repo $repository.name -owner $DestinationRepoOwner -BranchName $BranchName -BranchFromName 'master'
+        New-GithubBranch -repo $repository.name -owner $DestinationRepoOwner -BranchName $BranchName -BranchFromName $DefaultBranchName
         Select-GitBranch -BranchName $BranchName
       }
     }
@@ -202,7 +200,7 @@ catch {
     }
     try {
       Write-Log -Level INFO -Source 'entrypoint' -Message "Opening Pull Request $PullRequestTitle with body of $PullRequestBody"
-      New-GithubPullRequest -owner $DestinationRepoOwner -Repo $repository.name -Head "$($DestinationRepoOwner):$($BranchName)" -base 'master' -title $PullRequestTitle -body $PullRequestBody
+      New-GithubPullRequest -owner $DestinationRepoOwner -Repo $repository.name -Head "$($DestinationRepoOwner):$($BranchName)" -base $DefaultBranchName -title $PullRequestTitle -body $PullRequestBody
     }
     catch {
       Write-Log -Level ERROR -Source 'entrypoint' -Message "Unable to open Pull Request $PullRequestTitle with body of $PullRequestBody"
