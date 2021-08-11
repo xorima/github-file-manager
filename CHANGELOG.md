@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.0 - *2021-08-11*
 
 - Breaking Change: Defaults to looking for main branches, introduces new cli arg for setting default branch name
 
