@@ -50,7 +50,7 @@ param (
   [String]
   $GitEmail = $ENV:GFM_GIT_EMAIL,
   [String]
-  $DefaultBranchName = 'main'
+  $DefaultBranchName = $ENV:GFM_DEFAULT_GIT_BRANCH
 )
 
 try {
@@ -71,6 +71,11 @@ if (!($ENV:GITHUB_TOKEN)) {
 if (!($ENV:GITHUB_API_ROOT)) {
   Write-Log -Level INFO -Source 'entrypoint' -Message "GITHUB_API_ROOT has been set to api.github.com"
   $ENV:GITHUB_API_ROOT = 'api.github.com'
+}
+if (!($DefaultBranchName)){
+  Write-Log -Level INFO -Source 'entrypoint' -Message "DefaultBranchName has been set to 'main', to override set env var: GFM_DEFAULT_GIT_BRANCH"
+  $DefaultBranchName = 'main'
+
 }
 # Setup the git config first, if env vars are not supplied this will do nothing.
 Set-GitConfig -gitName $GitName -gitEmail $GitEmail

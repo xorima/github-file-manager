@@ -33,6 +33,7 @@ Below are a list of variables, what they mean and example values
 | GFM_PULL_REQUEST_LABELS | `String` | No | The labels to apply to the Pull Request, Takes a csv, eg: `tech-debt,automated` |
 | GFM_GIT_NAME | `String` | No | The Name to use when creating the git commits |
 | GFM_GIT_EMAIL | `String` | No | The E-mail address to use when creating the git commits |
+| GFM_DEFAULT_GIT_BRANCH | `String` | No | The name of the default branch, if not set this will default to `main` |
 
 ## Git Authentication
 
@@ -46,8 +47,8 @@ This application is tagged as follows
 
 | Name | Description |
 |------|-------------|
-| latest | The latest master merge |
+| latest | The latest mainline merge |
 | dev  | The latest Pull Request build |
 | semvar (eg: 1.0.0) | A Github Release of a fixed point in time |
 
-While all updates should result in a release this is not always the case, sometimes master will change for non-functional related changes and a release will not be made, eg a new file in the `infrastructure` folder
+While all updates should result in a release this is not always the case, sometimes mainline will change for non-functional related changes and a release will not be made, eg a new file in the `infrastructure` folder
