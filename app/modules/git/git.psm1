@@ -33,11 +33,23 @@ function New-CommitAndPushIfChanged {
     [String]
     $CommitMessage,
     [Switch]
-    $Push
+    $Push,
+    [Switch]
+    $ChangeLogIsManaged,
+    [String]
+    $ChangeLogLocation,
+    [String]
+    $ChangeLogMarker
   )
   try {
     $ChangeCount = Get-GitChangeCount
     if ($ChangeCount -gt 0) {
+      Write-Log -level INFO -Source 'entrypoint' -Message "************ ChangeLogIsManaged: $ChangeLogIsManaged , ChangeLogLocation: $ChangeLogLocation , ChangeLogMarker = $ChangeLogMarker"
+      if ($ChangeLogIsManaged) {
+        Write-Log -Level INFO -Source 'entrypoint' -Message "Managing the changelog in $ChangeLogLocation with Marker of $ChangeLogMarker"
+        Set-ChangeLog -ChangelogPath $ChangeLogLocation -ChangeLogMarker $ChangeLogMarker -ChangeLogEntry "$CommitMessage`n`n"
+      }
+
       Write-Log -Level INFO -Source 'git' -Message 'Files have changed adding all files'
       git add -A
       Write-Log -Level INFO -Source 'git' -Message "Committing to current branch $(git branch)"

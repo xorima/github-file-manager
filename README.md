@@ -33,6 +33,10 @@ Below are a list of variables, what they mean and example values
 | GFM_PULL_REQUEST_LABELS | `String` | No | The labels to apply to the Pull Request, Takes a csv, eg: `tech-debt,automated` |
 | GFM_GIT_NAME | `String` | No | The Name to use when creating the git commits |
 | GFM_GIT_EMAIL | `String` | No | The E-mail address to use when creating the git commits |
+| GFM_CHANGELOG_LOCATION | `String` | No | The location of the change log to update relative to the root of the repo |
+| GFM_CHANGELOG_MARKER | `String` | No | The string to use as the update point in the changelog, if not found it will be added before the next subtitle of `##` |
+| GFM_MANAGE_CHANGELOG | `String` | Yes | Should we be managing the changelog, set to `0` for no, `1` for yes |
+
 | GFM_DEFAULT_GIT_BRANCH | `String` | No | The name of the default branch, if not set this will default to `main` |
 
 ## Git Authentication
