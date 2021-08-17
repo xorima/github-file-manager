@@ -50,6 +50,12 @@ param (
   [String]
   $GitEmail = $ENV:GFM_GIT_EMAIL,
   [String]
+  $ChangeLogLocation = $ENV:GFM_CHANGELOG_LOCATION,
+  [String]
+  $ChangeLogMarker = $ENV:GFM_CHANGELOG_MARKER,
+  [bool]
+  $ChangeLogIsManaged = [Int]$ENV:GFM_MANAGE_CHANGELOG,
+  [String]
   $DefaultBranchName = $ENV:GFM_DEFAULT_GIT_BRANCH
 )
 
@@ -58,6 +64,7 @@ try {
   import-module ./app/modules/github
   import-module ./app/modules/git
   import-module ./app/modules/logging
+  import-module ./app/modules/changelog
 
 }
 catch {
@@ -77,6 +84,12 @@ if (!($DefaultBranchName)){
   $DefaultBranchName = 'main'
 
 }
+
+if ($PullRequestLabels) {
+  $labelsArray = $PullRequestLabels.Split(',')
+  $manageLabels = $true
+}
+
 # Setup the git config first, if env vars are not supplied this will do nothing.
 Set-GitConfig -gitName $GitName -gitEmail $GitEmail
 
@@ -193,17 +206,30 @@ catch {
     # Commit the files that have changed
     try {
       Write-Log -Level INFO -Source 'entrypoint' -Message "Commiting standardised files and pushing to remote if changed"
-      New-CommitAndPushIfChanged -CommitMessage "Standardise files with files in $SourceRepoOwner/$SourceRepoName" -push
+      New-CommitAndPushIfChanged -CommitMessage "Standardise files with files in $SourceRepoOwner/$SourceRepoName" -push `
+        -ChangeLogIsManaged $ChangeLogIsManaged -ChangeLogMarker $ChangeLogMarker -ChangeLogLocation $ChangeLogLocation
     }
     catch {
       Write-Log -Level ERROR -Source 'entrypoint' -Message "Unable to commit standardised files and push to remote if changed"
     }
     try {
       Write-Log -Level INFO -Source 'entrypoint' -Message "Opening Pull Request $PullRequestTitle with body of $PullRequestBody"
-      New-GithubPullRequest -owner $DestinationRepoOwner -Repo $repository.name -Head "$($DestinationRepoOwner):$($BranchName)" -base $DefaultBranchName -title $PullRequestTitle -body $PullRequestBody
+      $pr = New-GithubPullRequest -owner $DestinationRepoOwner -Repo $repository.name -Head "$($DestinationRepoOwner):$($BranchName)" -base $DefaultBranchName -title $PullRequestTitle -body $PullRequestBody
     }
     catch {
       Write-Log -Level ERROR -Source 'entrypoint' -Message "Unable to open Pull Request $PullRequestTitle with body of $PullRequestBody"
+    }
+    if ($manageLabels) {
+      try {
+        $prJson = $pr | ConvertTo-Json
+        Write-Log -level INFO -Source 'TEST******' -Message $prJson
+        Write-Log -level INFO -Source 'TEST******' -Message $pr.number
+        Write-Log -Level INFO -Source 'entrypoint' -Message "Setting Labels on Pull Request, $($labelsArray.ToString()), PR ID: $($pr.number)"
+        Add-GithubIssueLabels -owner $DestinationRepoOwner -repo $repository.Name -issueId $pr.number -labels $labelsArray
+      }
+      catch {
+        Write-Log -Level ERROR -Source 'entrypoint' -Message "Unable to set labels $labelsArray on Pull Request"
+      }
     }
   }
   else {

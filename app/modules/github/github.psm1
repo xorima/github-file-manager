@@ -286,4 +286,23 @@ function New-GithubPullRequest {
 }
 
 
+function Add-GithubIssueLabels {
+  param(
+    [String]
+    $owner,
+    [String]
+    $repo,
+    [Int]
+    $issueId,
+    [Array]
+    $labels
+  )
+
+  Write-Log -Level INFO -Source 'github' -Message "Setting Labels $Labels on $owner/$repo : $issueID"
+  $labelsJson = @{'labels' = $labels} | ConvertTo-Json
+
+    return Invoke-GithubApi -Endpoint "repos/$owner/$repo/issues/$issueID/labels" -Method POST -Body $labelsJson -ErrorAction Stop
+}
+
+
 Export-ModuleMember *
