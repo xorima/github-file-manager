@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.1.0 - *2021-08-17*
+
 - Enable option to Manage Changelog
 - Enable setting Labels on PRs created
 
